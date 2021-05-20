@@ -4,8 +4,6 @@ using System.IO;
 using System.Linq;
 using Todoist.Net.Models;
 
-// dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true
-
 namespace ToDo
 {
   static class Constants
