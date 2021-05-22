@@ -1,2 +1,2 @@
-@%~dp0\todo %*
+@%~dp0\todo.exe %*
 rem раскладка
