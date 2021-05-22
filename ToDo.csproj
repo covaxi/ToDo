@@ -10,4 +10,10 @@
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0" />
     <PackageReference Include="Todoist.Net" Version="2.1.1" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ещвщ.cmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
