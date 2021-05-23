@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -12,16 +9,20 @@ namespace ToDo
   public class Config
   {
     public static Dictionary<string, string> Values { get; set; }
-    public static async ValueTask Write(string filename)
+
+    public static string GetValue(string name, string defaultValue = "")
     {
-      Directory.CreateDirectory(Path.GetDirectoryName(filename));
-      using(var fs = File.CreateText(filename))
+      if (!Config.Values.ContainsKey(name))
       {
-        foreach(var line in Values)
+        Console.WriteLine($"Enter {name}" + (string.IsNullOrWhiteSpace(defaultValue) ? ": " : $" [{defaultValue}]: "));
+        var value = Console.ReadLine();
+        if (string.IsNullOrWhiteSpace(value) && !string.IsNullOrWhiteSpace(defaultValue))
         {
-          await fs.WriteLineAsync($"{line.Key}={line.Value}");
+          value = defaultValue;
         }
+        return Config.Values[name] = value;
       }
+      return Config.Values[name];
     }
 
     public static async ValueTask<Dictionary<string, string>> Read(string filename)
@@ -45,6 +46,18 @@ namespace ToDo
       }
       Values = result;
       return result;
+    }
+
+    public static async ValueTask Write(string filename)
+    {
+      Directory.CreateDirectory(Path.GetDirectoryName(filename));
+      using (var fs = File.CreateText(filename))
+      {
+        foreach (var line in Values)
+        {
+          await fs.WriteLineAsync($"{line.Key}={line.Value}");
+        }
+      }
     }
   }
 }

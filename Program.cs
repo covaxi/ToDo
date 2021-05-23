@@ -1,72 +1,21 @@
 using System;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using Todoist.Net.Models;
 
 namespace ToDo
 {
-  static class Constants
-  {
-    public const string Todoist = "Todoist";
-    public const string APIKey = "APIKey";
-    public const string DefaultProjectName = "DefaultProjectName";
-    public const string Inbox = "Inbox";
-    public const string Settings = "settings.ini";
-  }
   class Program
   {
-    //public static string GetValue(string name, string defaultValue = "")
-    //{
-    //  var directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Constants.Todoist);
-    //  if (!Directory.Exists(directory))
-    //  {
-    //    Directory.CreateDirectory(directory);
-    //  }
-
-    //  var fileName = Path.Combine(directory, $"{name}.txt");
-    //  if (!File.Exists(fileName))
-    //  {
-    //    Console.WriteLine($"Enter {name}" + (string.IsNullOrWhiteSpace(defaultValue) ? ": " : $" [{defaultValue}]: "));
-    //    var value = Console.ReadLine();
-    //    if (string.IsNullOrWhiteSpace(value) && !string.IsNullOrWhiteSpace(defaultValue))
-    //    {
-    //      value = defaultValue;
-    //    }
-    //    using (var fs = File.CreateText(fileName))
-    //    {
-    //      fs.WriteLine(value);
-    //    }
-    //    return value;
-    //  }
-    //  using (var fs = File.OpenText(fileName))
-    //  {
-    //    return fs.ReadLine();
-    //  }
-    //}
-
-    public static string GetValue(string name, string defaultValue = "")
-    {
-      if (!Config.Values.ContainsKey(name))
-      {   
-        Console.WriteLine($"Enter {name}" + (string.IsNullOrWhiteSpace(defaultValue) ? ": " : $" [{defaultValue}]: "));
-        var value = Console.ReadLine();
-        if (string.IsNullOrWhiteSpace(value) && !string.IsNullOrWhiteSpace(defaultValue))
-        {
-          value = defaultValue;
-        }
-        return Config.Values[name] = value;
-      }
-      return Config.Values[name];
-    }
+    public static string ConfigFile => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Constants.Todoist, "settings.ini");
 
     static async System.Threading.Tasks.Task Main(string[] args)
     {
       try
       {
-        await Config.Read(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Constants.Todoist, "settings.ini"));
-        var token = GetValue(Constants.APIKey);
-        var projectName = GetValue(Constants.DefaultProjectName, Constants.Inbox);
+        await Config.Read(ConfigFile);
+        var token = Config.GetValue(Constants.APIKey);
+        var projectName = Config.GetValue(Constants.DefaultProjectName, Constants.Inbox);
         var user = new Todoist.Net.TodoistClient(token);
         var projects = await user.Projects.GetAsync();
         var project = projects.FirstOrDefault(p => p.Name == projectName);
@@ -82,7 +31,7 @@ namespace ToDo
       }
       finally
       {
-        await Config.Write(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Constants.Todoist, "settings.ini"));
+        await Config.Write(ConfigFile);
       }
     }
   }
